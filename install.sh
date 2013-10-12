@@ -34,12 +34,6 @@ function convert_rpm_and_install() {
     check_result $? "${ORACLE_XE_DEB_PACKAGE} installed" "installation of ${ORACLE_XE_DEB_PACKAGE}"
 }
 
-function install_deb_package() {
-    #TODO check if need to install deb package
-    echo "Installing ${ORACLE_XE_DEB_PACKAGE}:"
-    dpkg -i "${ORACLE_XE_DEB_PACKAGE}"
-}
-
 function install_chkconfig() {
     echo "Installing /sbin/chkconfig required in RedHats"
     chmod all+x chkconfig
