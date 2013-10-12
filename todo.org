@@ -1,9 +1,7 @@
-* Add args parsing
 * Implement setting hostname in [0/2]:
   - [ ] listener.ora
   - [ ] tnsnames.ora
 * Automate running configuration script (oracle-xe configure)
 * Add user to group only if not there
 * Add vars to .bashrc only if they don't exist
-* Write "usage" function
 * Consider creating tmp swap if needed

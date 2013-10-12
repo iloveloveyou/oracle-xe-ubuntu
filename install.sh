@@ -138,11 +138,35 @@ function check_result() {
 }
 
 function usage() {
-    echo "Run this script as root."
+    echo "Usage: $0 [-i]"
     echo
-    echo "./$0"
+    echo "Commands usually have longer counterparts."
+    echo "  -h    - this screen"
+    echo "  -i    - convert RPM to DEB and install it (requires alien)"
+    echo
+    echo "Example 1: $0"
+    echo "  Starts system configuration for Oracle XE."
+    echo
+    echo "Example 2: $0 -i"
+    echo "  Converts Oracle XE from ${ORACLE_XE_RPM_PACKAGE} to deb package"
+    echo "  and installs it. Then starts system configuration."
+    echo
+    echo "This script must be run as root."
+
     exit 1
 }
+
+while [ ! -z "${1}" ]; do
+    case "$1" in
+	-i|--install-package)
+	    CONVERT_INSTALL_PACKAGE=true; shift 2;;
+	-h|--help)
+	    usage;;
+	*)
+	    echo "Unknown param: '${1}'"
+	    usage;;
+    esac
+done
 
 convert_rpm_and_install
 post_install_message
