@@ -16,7 +16,11 @@ function copy_file() {
 }
 
 function convert_rpm_to_deb() {
-    #TODO check if alien is installed
+    command -v alien >/dev/null 2>&1
+    if [ $? != 0 ]; then
+	echo "'alien' is required to convert RPM to DEB."
+	exit 1
+    fi
     echo "Converting ${ORACLE_XE_RPM_PACKAGE} to ${ORACLE_XE_DEB_PACKAGE}:"
     # The '-c' option includes package scripts.
     alien -c "${ORACLE_XE_RPM_PACKAGE}"
@@ -87,6 +91,7 @@ function configure_oracle_xe() {
 
 #params: username
 function setup_user() {
+    #TODO add only if not there
     echo "Adding ${1} to the 'dba' group, to allow start the database"
     adduser ${1} dba
 
