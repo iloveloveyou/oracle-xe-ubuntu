@@ -1,8 +1,8 @@
 #!/bin/bash
 
 ORACLE_XE_VERSION=11.2.0
-ORACLE_XE_RPM_PACKAGE=oracle-xe-11.2.0-1.0.x86_64.rpm
-ORACLE_XE_DEB_PACKAGE=oracle-xe-11.2.0-1.0.x86_64.deb
+ORACLE_XE_RPM_PACKAGE=oracle-xe-${ORACLE_XE_VERSION}-1.0.x86_64.rpm
+ORACLE_XE_DEB_PACKAGE=oracle-xe-${ORACLE_XE_VERSION}-1.0.x86_64.deb
 FS_FILESIZE_MAX=6815744
 
 #params: src-file target-dir
@@ -15,16 +15,23 @@ function copy_file() {
     fi
 }
 
-function convert_rpm_to_deb() {
-    command -v alien >/dev/null 2>&1
-    if [ $? != 0 ]; then
-	echo "'alien' is required to convert RPM to DEB."
-	exit 1
+function convert_rpm_and_install() {
+    if [ -z "${CONVERT_INSTALL_PACKAGE}" ]; then
+	echo "Skipping RPM to DEB conversion."
+	echo "Assuming ${ORACLE_XE_DEB_PACKAGE} is already installed."
+	echo
+	return
     fi
-    echo "Converting ${ORACLE_XE_RPM_PACKAGE} to ${ORACLE_XE_DEB_PACKAGE}:"
+
+    command -v alien >/dev/null 2>&1
+    check_result $? "alien is installed" "'alien' is required to convert RPM to DEB."
+
     # The '-c' option includes package scripts.
     alien -c "${ORACLE_XE_RPM_PACKAGE}"
-    #TODO stop on error
+    check_result $? "converted to deb package" "conversion to deb package"
+
+    dpkg -i "${ORACLE_XE_DEB_PACKAGE}"
+    check_result $? "${ORACLE_XE_DEB_PACKAGE} installed" "installation of ${ORACLE_XE_DEB_PACKAGE}"
 }
 
 function install_deb_package() {
@@ -120,4 +127,22 @@ function post_install_message() {
     echo
 }
 
-#post_install_message
+#params: test result, ok message, fail message
+function check_result() {
+    if [ "${1}" == "0" ]; then
+	echo -e "   ["'\E[32m'"\033[1mOK\033[0m]     - ${2}"
+    else
+	echo -e "   ["'\E[31m'"\033[1mFAILED\033[0m] - ${3}"
+	exit 1
+    fi
+}
+
+function usage() {
+    echo "Run this script as root."
+    echo
+    echo "./$0"
+    exit 1
+}
+
+convert_rpm_and_install
+post_install_message
