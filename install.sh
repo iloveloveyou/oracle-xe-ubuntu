@@ -97,13 +97,14 @@ function setup_user() {
 }
 
 function post_install_message() {
+    echo
     echo "Start database: service oracle-xe start"
     echo
-    echo "If there is: Connected to an idle instance."
+    echo "If there is: 'Connected to an idle instance.'"
     echo "It means that the Oracle XE is not started during booting."
     echo "Start it using: startup"
     echo
-    echo "To shutdown use: shutdown immediate"
+    echo "Shutdown from SQLPlus: shutdown immediate"
     echo
     echo "Make sure: chown -R oracle.dba /var/tmp/.oracle"
     echo
@@ -113,3 +114,5 @@ function post_install_message() {
     echo "  grant connect,resource to myuser;"
     echo
 }
+
+#post_install_message
