@@ -2,7 +2,7 @@
 
 ORACLE_XE_VERSION=11.2.0
 ORACLE_XE_RPM_PACKAGE=oracle-xe-${ORACLE_XE_VERSION}-1.0.x86_64.rpm
-ORACLE_XE_DEB_PACKAGE=oracle-xe-${ORACLE_XE_VERSION}-1.0.x86_64.deb
+ORACLE_XE_DEB_PACKAGE=oracle-xe_${ORACLE_XE_VERSION}-2_amd64.deb
 FS_FILESIZE_MAX=6815744
 
 #params: src-file target-dir
@@ -137,7 +137,7 @@ function check_result() {
 }
 
 function usage() {
-    echo "Usage: $0 [-i]"
+    echo "Usage: $0 [-i] [-s]"
     echo
     echo "Commands usually have longer counterparts."
     echo "  -h    - this screen"
@@ -159,9 +159,9 @@ function usage() {
 while [ ! -z "${1}" ]; do
     case "$1" in
 	-i|--install-package)
-	    CONVERT_INSTALL_PACKAGE=true; shift 2;;
+	    CONVERT_INSTALL_PACKAGE=true; shift 1;;
 	-s|--tmp-shm)
-	    NO_PERM_SHM_INSTALL=true
+	    NO_PERM_SHM_INSTALL=true; shift 1;;
 	-h|--help)
 	    usage;;
 	*)
