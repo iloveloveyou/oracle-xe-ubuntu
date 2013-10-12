@@ -174,4 +174,7 @@ convert_rpm_and_install
 install_chkconfig
 install_shm
 install_sysctl_file
+load_new_kernel_parameters
+check_swap_space
+create_required_links
 post_install_message
