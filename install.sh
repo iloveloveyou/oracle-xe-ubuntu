@@ -12,6 +12,7 @@ function copy_file() {
 	echo "${target} already exists. Skipping."
     else
 	cp ${1} ${2}
+	check_result $? "${target} installed" "installing ${target}"
     fi
 }
 
@@ -35,19 +36,23 @@ function convert_rpm_and_install() {
 }
 
 function install_chkconfig() {
-    echo "Installing /sbin/chkconfig required in RedHats"
-    chmod all+x chkconfig
+    # /sbin/chkconfig required in RedHats
+    chmod a+x chkconfig
     copy_file chkconfig /sbin
 }
 
 function install_shm() {
-    echo "Installing /etc/rc2.d/S01shm_load to ensure working env in on system boot"
-    chmod 755 S01shm_load
-    copy_file S01shm_load /etc/rc2.d
+    # /etc/rc2.d/S01shm_load to ensure working env in on system boot
+    if [ ! -z "${NO_PERM_SHM_INSTALL}" ]; then
+	./setup-shm-for-oracle-xe.sh
+    else
+	chmod 755 S01shm_load
+	copy_file S01shm_load /etc/rc2.d
+    fi
 }
 
 function install_sysctl_file() {
-    echo "Installing /etc/sysctl.d/60-oracle.conf"
+    # required kernel parameters
     copy_file 60-oracle.conf /etc/sysctl.d
 }
 
@@ -137,6 +142,7 @@ function usage() {
     echo "Commands usually have longer counterparts."
     echo "  -h    - this screen"
     echo "  -i    - convert RPM to DEB and install it (requires alien)"
+    echo "  -s    - config /dev/shm only temporarily"
     echo
     echo "Example 1: $0"
     echo "  Starts system configuration for Oracle XE."
@@ -154,6 +160,8 @@ while [ ! -z "${1}" ]; do
     case "$1" in
 	-i|--install-package)
 	    CONVERT_INSTALL_PACKAGE=true; shift 2;;
+	-s|--tmp-shm)
+	    NO_PERM_SHM_INSTALL=true
 	-h|--help)
 	    usage;;
 	*)
@@ -163,4 +171,7 @@ while [ ! -z "${1}" ]; do
 done
 
 convert_rpm_and_install
+install_chkconfig
+install_shm
+install_sysctl_file
 post_install_message
