@@ -55,22 +55,16 @@ function install_sysctl_file() {
 }
 
 function load_new_kernel_parameters() {
-    echo "Loading new kernel parameters"
+    #echo "Loading new kernel parameters"
     service procps start
-    echo "Verifying: fs.file-max == ${FS_FILESIZE_MAX}"
-    if [ $(sysctl -q fs.file-max | awk '/fs.file-max/ { print $3;}') != ${FS_FILESIZE_MAX} ]; then
-	echo "ERROR: 'fs.file-max' in /etc/sysctl.d/60-oracle.conf should be set to ${FS_FILESIZE_MAX}."
-	exit 1
-    fi
+    [ $(sysctl -q fs.file-max | awk '/fs.file-max/ { print $3;}') -eq ${FS_FILESIZE_MAX} ]
+    check_result $? "kernel param fs.file-max == ${FS_FILESIZE_MAX}" "'fs.file-max' in /etc/sysctl.d/60-oracle.conf should be set to ${FS_FILESIZE_MAX}."
 }
 
 function check_swap_space() {
     #TODO create tmp swap if needed
-    echo "Checking minimum swap space required by Oracle XE."
-    if [ $(free -m | awk ' /Swap/ { print $2; }') < 2048 ]; then
-	echo "ERROR: Oracle XE requires minimum swap space of 2GB."
-	exit 1
-    fi
+    [ $(free -m | awk ' /Swap/ { print $2; }') -ge 2048 ]
+    check_result $? "minimum required swap space" "Oracle XE requires at least 2GB of swap space"
 }
 
 function create_required_links() {
