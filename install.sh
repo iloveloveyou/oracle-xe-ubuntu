@@ -9,7 +9,7 @@ FS_FILESIZE_MAX=6815744
 function copy_file() {
     target="${2}/${1}"
     if [ -r "${target}" ]; then
-	echo "${target} already exists. Skipping."
+	print_ok "${target} exists"
     else
 	cp ${1} ${2}
 	check_result $? "${target} installed" "installing ${target}"
@@ -67,11 +67,12 @@ function check_swap_space() {
     check_result $? "minimum required swap space" "Oracle XE requires at least 2GB of swap space"
 }
 
-function create_required_links() {
-    echo "Must have AWK in /bin/awk"
+function install_awk() {
     if [ ! -x /bin/awk ]; then
 	ln -s /usr/bin/awk /bin/awk
     fi
+    [ -x /bin/awk ]
+    check_result $? "/bin/awk" "must have AWK in /bin/awk"
 }
 
 function set_oracle_xe_hostname() {
@@ -121,11 +122,21 @@ function post_install_message() {
 #params: test result, ok message, fail message
 function check_result() {
     if [ "${1}" == "0" ]; then
-	echo -e "   ["'\E[32m'"\033[1mOK\033[0m]     - ${2}"
+	print_ok "${2}"
     else
-	echo -e "   ["'\E[31m'"\033[1mFAILED\033[0m] - ${3}"
+	print_failed "${3}"
 	exit 1
     fi
+}
+
+#params: message
+function print_ok() {
+    echo -e "   ["'\E[32m'"\033[1mOK\033[0m]     - ${1}"
+}
+
+#params: message
+function print_failed() {
+    echo -e "   ["'\E[31m'"\033[1mFAILED\033[0m] - ${1}"
 }
 
 function usage() {
@@ -168,5 +179,5 @@ install_shm
 install_sysctl_file
 load_new_kernel_parameters
 check_swap_space
-create_required_links
+install_awk
 post_install_message
