@@ -43,7 +43,7 @@ function install_chkconfig() {
 
 function install_shm() {
     # /etc/rc2.d/S01shm_load to ensure working env in on system boot
-    if [ ! -z "${NO_PERM_SHM_INSTALL}" ]; then
+    if [ ! -z "${TEMP_SHM_INSTALL}" ]; then
 	./setup-shm-for-oracle-xe.sh
     else
 	chmod 755 S01shm_load
@@ -161,7 +161,7 @@ while [ ! -z "${1}" ]; do
 	-i|--install-package)
 	    CONVERT_INSTALL_PACKAGE=true; shift 1;;
 	-s|--tmp-shm)
-	    NO_PERM_SHM_INSTALL=true; shift 1;;
+	    TEMP_SHM_INSTALL=true; shift 1;;
 	-h|--help)
 	    usage;;
 	*)
