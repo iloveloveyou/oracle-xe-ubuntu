@@ -75,17 +75,20 @@ function install_awk() {
     check_result $? "/bin/awk" "must have AWK in /bin/awk"
 }
 
+function configure_oracle_xe() {
+    oracle_xe_config=/etc/default/oracle-xe
+    if [ ! -f ${oracle_xe_config} ]; then
+	/etc/init.d/oracle-xe configure responseFile=oracle-xe-config.conf
+    fi
+    [ -f ${oracle_xe_config} ]
+    check_result $? "Oracle XE configured (${oracle_xe_config})" "running Oracle XE config - try to run '/etc/init.d/oracle-xe configure' manually"
+}
+
 function set_oracle_xe_hostname() {
     #TODO Change host entries in the following files:
     echo "Change host entries in the following files:"
     echo /u01/app/oracle/product/${ORACLE_XE_VERSION}/xe/network/admin/listener.ora
     echo /u01/app/oracle/product/${ORACLE_XE_VERSION}/xe/network/admin/tnsnames.ora
-}
-
-function configure_oracle_xe() {
-    #TODO automate running configuration script
-    echo "Configuring database"
-    /etc/init.d/oracle-xe configure
 }
 
 #params: username
@@ -155,6 +158,8 @@ function usage() {
     echo "  and installs it. Then starts system configuration."
     echo
     echo "This script must be run as root."
+    echo
+    echo "Edit Oracle XE configuration in oracle-xe-config.conf."
 
     exit 1
 }
@@ -173,6 +178,11 @@ while [ ! -z "${1}" ]; do
     esac
 done
 
+if [ $(id -u) != "0" ]; then
+    echo "You must be root user to run the script."
+    exit 1
+fi
+
 convert_rpm_and_install
 install_chkconfig
 install_shm
@@ -180,4 +190,6 @@ install_sysctl_file
 load_new_kernel_parameters
 check_swap_space
 install_awk
+configure_oracle_xe
+#set_oracle_xe_hostname
 post_install_message
