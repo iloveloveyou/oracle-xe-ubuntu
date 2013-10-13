@@ -4,6 +4,7 @@ ORACLE_XE_VERSION=11.2.0
 ORACLE_XE_RPM_PACKAGE=oracle-xe-${ORACLE_XE_VERSION}-1.0.x86_64.rpm
 ORACLE_XE_DEB_PACKAGE=oracle-xe_${ORACLE_XE_VERSION}-2_amd64.deb
 FS_FILESIZE_MAX=6815744
+RUN_ON_LOCALHOST=true
 
 #params: src-file target-dir
 function copy_file() {
@@ -78,17 +79,17 @@ function install_awk() {
 function configure_oracle_xe() {
     oracle_xe_config=/etc/default/oracle-xe
     if [ ! -f ${oracle_xe_config} ]; then
+	original_hostname="${HOSTNAME}"
+	if [ "${RUN_ON_LOCALHOST}" == "true" ]; then
+	    export HOSTNAME=localhost
+	fi
 	/etc/init.d/oracle-xe configure responseFile=oracle-xe-config.conf
+	if [ -n "${HOSTNAME}" ]; then
+	    export HOSTNAME="${original_hostname}"
+	fi
     fi
     [ -f ${oracle_xe_config} ]
     check_result $? "Oracle XE configured (${oracle_xe_config})" "running Oracle XE config - try to run '/etc/init.d/oracle-xe configure' manually"
-}
-
-function set_oracle_xe_hostname() {
-    #TODO Change host entries in the following files:
-    echo "Change host entries in the following files:"
-    echo /u01/app/oracle/product/${ORACLE_XE_VERSION}/xe/network/admin/listener.ora
-    echo /u01/app/oracle/product/${ORACLE_XE_VERSION}/xe/network/admin/tnsnames.ora
 }
 
 #params: username
@@ -168,6 +169,8 @@ while [ ! -z "${1}" ]; do
     case "$1" in
 	-i|--install-package)
 	    CONVERT_INSTALL_PACKAGE=true; shift 1;;
+	-l|--localhost)
+	    RUN_ON_LOCALHOST="${2}"; shift 2;;
 	-s|--tmp-shm)
 	    TEMP_SHM_INSTALL=true; shift 1;;
 	-h|--help)
@@ -191,5 +194,4 @@ load_new_kernel_parameters
 check_swap_space
 install_awk
 configure_oracle_xe
-#set_oracle_xe_hostname
 post_install_message
