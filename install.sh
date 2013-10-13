@@ -37,7 +37,6 @@ function convert_rpm_and_install() {
 
 function install_chkconfig() {
     # /sbin/chkconfig required in RedHats
-    chmod a+x chkconfig
     copy_file chkconfig /sbin
 }
 
@@ -46,7 +45,6 @@ function install_shm() {
     if [ ! -z "${TEMP_SHM_INSTALL}" ]; then
 	./setup-shm-for-oracle-xe.sh
     else
-	chmod 755 S01shm_load
 	copy_file S01shm_load /etc/rc2.d
     fi
 }
