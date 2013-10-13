@@ -94,13 +94,14 @@ function configure_oracle_xe() {
 
 #params: username
 function setup_user() {
-    #TODO add only if not there
-    echo "Adding ${1} to the 'dba' group, to allow start the database"
-    adduser ${1} dba
+    groups "${1}" | grep -q dba
+    if [ $? != "0" ]; then
+	echo "Adding ${1} to the 'dba' group, to allow to start/stop the database"
+	adduser "${1}" dba
+    fi
 
-    echo "Setting up env vars for user: ${1}"
+    copy_file .oracle-xe-env.sh ~${1}/
     #TODO add vars to .bashrc only if they don't exist
-    cp .oracle-xe-env.sh ~${1}/
     echo 'source ~/.oracle-xe-env.sh' >> ~${1}/.bashrc
 }
 
@@ -167,6 +168,8 @@ function usage() {
 
 while [ ! -z "${1}" ]; do
     case "$1" in
+	--dba-users)
+	    DBA_USERS="${2}"; shift 2;;
 	-i|--install-package)
 	    CONVERT_INSTALL_PACKAGE=true; shift 1;;
 	-l|--localhost)
@@ -194,4 +197,5 @@ load_new_kernel_parameters
 check_swap_space
 install_awk
 configure_oracle_xe
+#setup_user
 post_install_message
