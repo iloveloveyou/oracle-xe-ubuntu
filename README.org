@@ -2,8 +2,8 @@
   Ubuntu installation scripts for Oracle XE database.
 
 ** Install Oracle XE package
-*** Download Oracle XE RPM package from Oracle site
-*** Convert to DEB and install:
+  - Download Oracle XE RPM package from Oracle site
+  - Convert to DEB and install:
     #+BEGIN_SRC shell
     # The '-c' option includes package scripts.
     alien -c oracle-xe-11.2.0-1.0.x86_64.rpm
@@ -11,6 +11,7 @@
     #+END_SRC
 
 ** Usage
+   #+BEGIT_SRC shell
    The scripts must be run as root.
 
    Usage: ./install.sh [-i] [-s] [-h]
@@ -40,7 +41,7 @@
    This script must be run as root.
    
    Edit Oracle XE configuration in oracle-xe-config.conf.
-
+   #+END_SRC
 ** Resources
    The scripts have been written based on the following posts:
    - [[http://meandmyubuntulinux.blogspot.ca/2012/05/installing-oracle-11g-r2-express.html][Manish Raj's Blog - Installing oracle 11gr2]]
