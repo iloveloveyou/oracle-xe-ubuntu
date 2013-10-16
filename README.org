@@ -11,7 +11,7 @@
     #+END_SRC
 
 ** Usage
-   #+BEGIT_SRC shell
+   #+BEGIN_SRC shell
    The scripts must be run as root.
 
    Usage: ./install.sh [-i] [-s] [-h]
