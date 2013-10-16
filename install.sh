@@ -145,19 +145,29 @@ function print_failed() {
 }
 
 function usage() {
-    echo "Usage: $0 [-i] [-s]"
+    echo "Usage: $0 [-i] [-s] [-h]"
     echo
     echo "Commands usually have longer counterparts."
     echo "  -h    - this screen"
     echo "  -i    - convert RPM to DEB and install it (requires alien)"
+    echo "  -l    - configure Oracle Net Listener to listen on localhost not hostname (default: true)"
     echo "  -s    - config /dev/shm only temporarily"
     echo
     echo "Example 1: $0"
     echo "  Starts system configuration for Oracle XE."
+    echo "  /dev/shm will be prepared on every system boot."
     echo
-    echo "Example 2: $0 -i"
+    echo "Example 2: $0 --tmp-shm --localhost false"
+    echo "  Starts system configuration for Oracle XE."
+    echo "  It requires to run setup-shm-for-oracle-xe.sh before every first"
+    echo "  start of the DB after system reboot."
+    echo
+    echo "Example 3: $0 -i"
     echo "  Converts Oracle XE from ${ORACLE_XE_RPM_PACKAGE} to deb package"
     echo "  and installs it. Then starts system configuration."
+    echo
+    echo "Example 4: $0 --help"
+    echo "  This screen."
     echo
     echo "This script must be run as root."
     echo
